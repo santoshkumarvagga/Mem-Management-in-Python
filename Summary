@@ -1,0 +1,29 @@
+Memory management in Python involves a private heap containing all Python objects and data structures.
+
+The management of this private heap is ensured internally by the Python memory manager.
+More foramlly Interpreter will take care of managing memory blocks in python and user/developer
+will not have any kind of access to these functionalities though he may change object pointers several times.
+
+But user/developer can have interface to python memory manager to request, resize and free some portion of memory block explicitly during run time.
+
+Basically, using C API we can do these opeartions using malloc(),calloc(),realloc() and free().
+
+But, here C allocator will be functionally active, and python memory manager wont be interfering which may lead to fatal consequences if allowed for mixed allocations.
+
+Therefore, following functions will be used to avoid memory corruptions and free from using C API functions for python memory management:
+
+1) pyMem_Malloc(n) - allocates n bytes, returns (void *). initialised to garbage values. null if fails.
+2) pyMem_Calloc(n, size) - allocates n bytes, returns (void *). initialised to zero.each block of size = size. null if fails. 
+3) pyMem_Realloc(p) - reallocates p's memeory to n bytes. returns new pointer. new memory will have garbage values. returns old value p if fails.
+4) pyMem_Free(p) - deallocate p's memory.
+
+
+The following type-oriented macros are provided for convenience. Note that TYPE refers to any C type.
+
+1) pyMem_New(n, TYPE) - same as pyMem_Malloc(n), but type casts to TYPE.
+2) pyMem_Resize(n,size, TYPE) - same as pyMem_realloc(n, size), but type casts to TYPE.
+3) pyMem_Del(p) - same as pyMem_Free(p).
+
+C API : 
+1) PyTraceMalloc_Track() - trace allocated memory
+2) PyTraceMalloc_Untrack() - untrack allocated memory using PyTrac module.
